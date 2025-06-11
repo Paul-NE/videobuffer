@@ -5,7 +5,7 @@ import threading
 
 import cv2
 from ..buffer.video_buffer import VideoBuffer
-from .approval import DumpApproval
+from .approval import DumpApproval, DumpApprovalSync
 
 def dump2file(video_buff: VideoBuffer, filename: Path, exist_ok: bool = False):
     if filename.exists() and not exist_ok:
@@ -71,8 +71,8 @@ def save_delayed_autoaprove(video_buffer:VideoBuffer, save_dir:Path, delay:datet
     approval.approve()
     return (save_task, approval)
 
-def save_delayed_init_threaded(video_buffer:VideoBuffer, save_dir:Path, delay:datetime.timedelta) -> tuple[threading.Thread, DumpApproval]:
-    approval = DumpApproval()
+def save_delayed_init_threaded(video_buffer:VideoBuffer, save_dir:Path, delay:datetime.timedelta) -> tuple[threading.Thread, DumpApprovalSync]:
+    approval = DumpApprovalSync()
     current_time = datetime.datetime.now()
     time_str = current_time.strftime("%m_%d_%Y;%H_%M_%S")
     
@@ -91,7 +91,7 @@ def save_delayed_init_threaded(video_buffer:VideoBuffer, save_dir:Path, delay:da
     
     return (thread, approval)
 
-def save_delayed_autoaprove_threaded(video_buffer:VideoBuffer, save_dir:Path, delay:datetime.timedelta) -> tuple[threading.Thread, DumpApproval]:
+def save_delayed_autoaprove_threaded(video_buffer:VideoBuffer, save_dir:Path, delay:datetime.timedelta) -> tuple[threading.Thread, DumpApprovalSync]:
     thread, approval = save_delayed_init_threaded(video_buffer, save_dir, delay)
     approval.approve()
     return (thread, approval)
